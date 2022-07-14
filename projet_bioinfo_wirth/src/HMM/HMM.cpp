@@ -17,12 +17,17 @@ std::map<const char, int> HMM::alphabet = {{'A', 0}, {'C', 1}, {'D', 2}, {'E', 3
 // Helper function
 std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor=1, std::size_t start=0, std::size_t stop=0);
 
+// Helper function 2
+inline double round( double val )
+{
+    if( val < 0 ) return ceil(val - 0.5);
+    return floor(val + 0.5);
+}
 HMM::HMM(Fasta fasta, float alpha)
 :sequences_(fasta.parse()),
 marked_columns_(get_marked_columns(sequences_, alpha)),
 N_(std::count(marked_columns_.begin(),marked_columns_.end(), true) + 1 )
 {
-
     T_.emplace_back(9, 1.);
     // Le premier état n'émet pas de caractère, aussi la ligne est remplie de NaN (ici, optional sans valeur)
     e_M_.emplace_back(20, std::optional<float>());
@@ -140,8 +145,8 @@ void HMM::display_matrix(std::vector<std::vector<std::optional<float>>> matrix) 
 void HMM::build_model() {
     // Pour chaque séquence Ak de A
     std::vector<HMMState> Pi_k;
-    auto l_count = 0; // l
-    auto model_column = 0; // u
+    int l_count; // l
+    int model_column; // u
     // Pour chaque séquence de A_k
     for (auto & A_k : sequences_) {
         // Début au rang 0
@@ -182,15 +187,21 @@ void HMM::build_model() {
             // Et Ak_l différent de '-'
             if (Pi_k[l_count] == HMMState::M && A_k[l_count] != '-' && model_column != 0) {
                 // Ajouter 1 à la position correspondant à l'acide aminé A_k[l] dans e_M[u]
-                e_M_[model_column][alphabet[A_k[l_count]]] =
-                        e_M_[model_column][alphabet[A_k[l_count]]].value() + 1;
+                // Skip caractère "X"
+                if (A_k[l_count] != 'X') {
+                    e_M_[model_column][alphabet[A_k[l_count]]] =
+                            e_M_[model_column][alphabet[A_k[l_count]]].value() + 1;
+                }
             }
             // Respectivement I
             else if (Pi_k[l_count] == HMMState::I && A_k[l_count] != '-') {
                 // Et Ak_l différent de '-'
                 // Ajouter 1 à la position correspondant à l'acide aminé A_k[l] dans e_I[u]
-                e_I_[model_column][alphabet[A_k[l_count]]] =
-                        e_I_[model_column][alphabet[A_k[l_count]]].value() + 1;
+                // Skip le caractère "X"
+                if (A_k[l_count] != 'X') {
+                    e_I_[model_column][alphabet[A_k[l_count]]] =
+                            e_I_[model_column][alphabet[A_k[l_count]]].value() + 1;
+                }
             }
             int i = l_count + 1;
             // Inutile de checker la size, la séquence est toujours finie par M.
@@ -207,6 +218,11 @@ void HMM::build_model() {
         }
     }
     normalize_matrixes();
+    /* Test pour voir si ça marche mieux (non, même nombre d'erreur)
+    round_matrix(T_);
+    round_matrix(e_M_);
+    round_matrix(e_I_);
+     */
 }
 
 void HMM::normalize_matrixes() {
@@ -367,6 +383,16 @@ char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     return '\0';
 }
 
+void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
+    for (auto & line : matrix) {
+        for (auto & element : line) {
+            if (element.has_value()) {
+                element = round(element.value());
+            }
+        }
+    }
+}
+
 std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor, std::size_t start, std::size_t stop) {
     std::size_t max_index = 0;
     auto value = 0.;
@@ -376,7 +402,7 @@ std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_facto
     }
     for (auto index = start; index < stop; index++) {
         // Raise to the power i_factor (used when searching for the next state)
-        if (index % 3 == 2) {
+        if (index % 3 == 2 && i_factor != 1) {
             if (std::pow(vector[index].value(), i_factor) > value) {
                 value = std::pow(vector[index].value(), i_factor);
                 max_index = index;

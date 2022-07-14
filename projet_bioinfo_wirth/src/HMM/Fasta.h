@@ -12,7 +12,7 @@
 
 class Fasta {
 public:
-    Fasta(const std::string& filename);
+    explicit Fasta(const std::string& filename);
     std::vector<std::vector<char>> parse();
 private:
     std::ifstream file_;
