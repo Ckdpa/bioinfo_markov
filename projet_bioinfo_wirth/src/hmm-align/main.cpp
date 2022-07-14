@@ -7,7 +7,8 @@
 
 int main(int argc, char *argv[]) {
     HMM hmm(argv[1]);
-    Fasta fasta(argv[2]);
+    hmm.set_sequences(Fasta(argv[2]).parse());
+    hmm.viterbi();
     if (argv[3] && !strcmp(argv[3], "--score")) {
 
     }

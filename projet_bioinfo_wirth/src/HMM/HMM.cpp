@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <utility>
 #include <valarray>
 #include "HMM.h"
 
@@ -375,12 +376,7 @@ void HMM::build_print_genseq() {
 
 char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     auto max_index = index_of_max(vector);
-    for (auto & mapping : alphabet) {
-        if (mapping.second == max_index) {
-            return mapping.first;
-        }
-    }
-    return '\0';
+    return find_alphabet_value_of(max_index);
 }
 
 [[maybe_unused]] void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
@@ -393,6 +389,105 @@ char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     }
 }
 
+void HMM::set_sequences(std::vector<std::vector<char>> sequences) {
+    sequences_ = std::move(sequences);
+}
+
+void HMM::viterbi() {
+    // Matrice de score
+    std::vector<std::vector<std::optional<double>>> V;
+    // Matrice retour
+    std::vector<std::vector<std::optional<double>>> B;
+
+    // Compteurs
+    // i position dans la HMM et ajout temporaire
+    auto i = 0;
+    int i_mod = 0;
+    // Position dans la séquence et ajout temporaire
+    auto j = 0;
+    int j_mod = 0;
+    // Valeur temporaire
+    double tmp = 0.;
+    // epsilon
+    const double epsilon = 1e-20;
+    // État actuel : On part toujours de M.
+    HMMState current_state = HMMState::M;
+    auto transition_state = HMMState ::None;
+
+    // Initialisation des matrices sans valeur
+    for (auto line = 0; line < 3 * N_ + 1; line++) {
+        V.emplace_back(sequences_.back().size() + 1, std::optional<double>());
+        B.emplace_back(sequences_.back().size() + 1, std::optional<double>());
+    }
+    std::vector<float> values;
+    while (i < 3 * N_ + 1) {
+        // Calcul du prochain état
+        transition_state = static_cast<HMMState>(index_of_max(T_[i], 1, 0, 3));
+        j = 0;
+        while (j < sequences_.back().size()) {
+            // Calcul du modificateur appliqué et de l'ajout supplémentaire
+            switch (current_state) {
+                case (HMMState::M): {
+                    i_mod = 1;
+                    j_mod = 1;
+                    if (e_M_[i][alphabet[sequences_.back()[j]]].has_value()) {
+                        tmp = log(e_M_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                    } else {
+                        tmp = log(epsilon);
+                    }
+                    break;
+                }
+                case (HMMState::D): {
+                    i_mod = 2;
+                    j_mod = 0;
+                    tmp = 0;
+                    break;
+                }
+                case (HMMState::I): {
+                    i_mod = 0;
+                    j_mod = 1;
+                    if (e_I_[i][alphabet[sequences_.back()[j]]].has_value()) {
+                        tmp = log(e_I_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                    } else {
+                        tmp = log(epsilon);
+                    }
+                    break;
+                }
+                case (HMMState::None): {
+                    // impossible
+                    break;
+                }
+            }
+            values.clear();
+            // Calculer les 3 valeurs si elles existent (check index)
+            // TODO
+            // Prendre le maximum
+            // TODO
+            // Sommer le maximum à tmp
+            // TODO
+            // Remplir V[i][j]
+            // TODO
+            // Étape retour ?
+            // TODO
+            j++;
+        }
+        // Update les states
+        current_state = transition_state;
+        i++;
+    }
+}
+
+char HMM::find_alphabet_value_of(size_t index) {
+    for (auto & mapping : alphabet) {
+        if (mapping.second == index) {
+            return mapping.first;
+        }
+    }
+    return 0;
+}
+
+
+// Helper function
 std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor, std::size_t start, std::size_t stop) {
     std::size_t max_index = 0;
     auto value = 0.;

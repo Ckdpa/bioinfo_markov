@@ -33,6 +33,10 @@ public:
 
     void print_model() const;
 
+    void viterbi();
+
+    void set_sequences(std::vector<std::vector<char>> sequences);
+
 private:
     void normalize_matrixes();
     enum class HMMState {
@@ -54,6 +58,8 @@ private:
     static char most_probable_char(std::vector<std::optional<float>> &vector);
     // Tests non concluants, mais pourrait servir si changement de consignes
     [[maybe_unused]] static void round_matrix(std::vector<std::vector<std::optional<float>>> matrix);
+
+    static char find_alphabet_value_of(size_t index);
 };
 
 
