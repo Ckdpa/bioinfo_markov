@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/HMM-build.dir/src/hmm-build/main.cpp.o CMakeFiles/HMM-build.dir/src/HMM/Fasta.cpp.o CMakeFiles/HMM-build.dir/src/HMM/HMM.cpp.o -o HMM-build 

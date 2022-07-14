@@ -1,0 +1,2 @@
+>RND1509 Randomly generated sequence, created by ExPASy tool RandSeq, using equal composition for all amino acids
+EQTVMKDTHRNFDKYNIIQHEDSAECIPVPFGFRWGKSLSGCMLYCAAWWYMRHNTVPQL

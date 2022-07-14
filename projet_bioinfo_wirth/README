@@ -1,0 +1,8 @@
+Bienvenue sur le projet de Bio-Informatique de la majeure Santé promotion 2023.
+
+Développement de 3 binaires en C++ pour générer et utiliser un modèle de Markov caché à partir d'un alignement de
+séquence.
+
+Requiert :
+ -C++20 (cpp2a)
+ -CMake

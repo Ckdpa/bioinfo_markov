@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/HMM-align.dir/src/hmm-align/main.cpp.o CMakeFiles/HMM-align.dir/src/HMM/Fasta.cpp.o CMakeFiles/HMM-align.dir/src/HMM/HMM.cpp.o -o HMM-align 

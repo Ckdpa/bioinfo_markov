@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/HMM-genseq.dir/src/hmm-genseq/main.cpp.o CMakeFiles/HMM-genseq.dir/src/HMM/Fasta.cpp.o CMakeFiles/HMM-genseq.dir/src/HMM/HMM.cpp.o -o HMM-genseq 
