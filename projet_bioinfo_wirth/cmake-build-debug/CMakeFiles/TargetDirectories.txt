@@ -1,5 +1,0 @@
-/home/felix/CLionProjects/projet_bioinfo_wirth/cmake-build-debug/CMakeFiles/HMM-build.dir
-/home/felix/CLionProjects/projet_bioinfo_wirth/cmake-build-debug/CMakeFiles/HMM-align.dir
-/home/felix/CLionProjects/projet_bioinfo_wirth/cmake-build-debug/CMakeFiles/HMM-genseq.dir
-/home/felix/CLionProjects/projet_bioinfo_wirth/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/felix/CLionProjects/projet_bioinfo_wirth/cmake-build-debug/CMakeFiles/rebuild_cache.dir

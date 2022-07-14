@@ -4,7 +4,6 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include "../HMM/Fasta.h"
 #include "../HMM/HMM.h"

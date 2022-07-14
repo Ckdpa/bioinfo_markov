@@ -8,3 +8,5 @@ add_executable(HMM-align src/hmm-align/main.cpp src/HMM/Fasta.cpp src/HMM/Fasta.
 add_executable(HMM-genseq src/hmm-genseq/main.cpp src/HMM/Fasta.cpp src/HMM/Fasta.h src/HMM/HMM.cpp src/HMM/HMM.h)
 
 target_compile_options(HMM-build PRIVATE -g)
+target_compile_options(HMM-genseq PRIVATE -g)
+target_compile_options(HMM-align PRIVATE -g)

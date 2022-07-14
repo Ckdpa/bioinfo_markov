@@ -159,7 +159,6 @@ void HMM::build_model() {
         }
         std::cout << std::endl;
 #endif
-
         // Déterminer la première position l0 non None
         while (l_count < Pi_k.size() && Pi_k[l_count] == HMMState::None) {
             l_count++;
@@ -174,13 +173,14 @@ void HMM::build_model() {
         // Mettre à jour T0 en considérant que l'état précédent est M
         T_[model_column][static_cast<int>(Pi_k[l_count])] =
                 T_[model_column][static_cast<int>(Pi_k[l_count])].value() + 1;
-        // Passage à l'état suivant (1)
-        model_column = 1;
         // Ensuite, pour chaque colonne l >= l0 de A_k
         while (l_count < A_k.size()) {
+            if (marked_columns_[l_count]) {
+                model_column++;
+            }
             // Si Pi_k[l] est un état M
             // Et Ak_l différent de '-'
-            if (Pi_k[l_count] == HMMState::M && A_k[l_count] != '-') {
+            if (Pi_k[l_count] == HMMState::M && A_k[l_count] != '-' && model_column != 0) {
                 // Ajouter 1 à la position correspondant à l'acide aminé A_k[l] dans e_M[u]
                 e_M_[model_column][alphabet[A_k[l_count]]] =
                         e_M_[model_column][alphabet[A_k[l_count]]].value() + 1;
@@ -202,9 +202,6 @@ void HMM::build_model() {
             if (i < Pi_k.size() && Pi_k[l_count] != HMMState::None) {
                 T_[model_column][static_cast<int>(Pi_k[l_count]) * 3 + static_cast<int>(Pi_k[i])] =
                         T_[model_column][static_cast<int>(Pi_k[l_count]) * 3 + static_cast<int>(Pi_k[i])].value() + 1;
-            }
-            if (marked_columns_[l_count]) {
-                model_column++;
             }
             l_count++;
         }

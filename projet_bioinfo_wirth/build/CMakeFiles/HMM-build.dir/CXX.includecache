@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/Fasta.h
+/home/felix/CLionProjects/EPITA-BioInfo-2023/projet_bioinfo_wirth/src/HMM/Fasta.h
 string
 -
 fstream
@@ -14,15 +14,17 @@ fstream
 vector
 -
 
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/HMM.cpp
+/home/felix/CLionProjects/EPITA-BioInfo-2023/projet_bioinfo_wirth/src/HMM/HMM.cpp
 iostream
 -
 iomanip
 -
+valarray
+-
 HMM.h
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/HMM.h
+/home/felix/CLionProjects/EPITA-BioInfo-2023/projet_bioinfo_wirth/src/HMM/HMM.h
 
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/HMM.h
+/home/felix/CLionProjects/EPITA-BioInfo-2023/projet_bioinfo_wirth/src/HMM/HMM.h
 vector
 -
 optional
@@ -30,19 +32,5 @@ optional
 map
 -
 Fasta.h
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/Fasta.h
-
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/hmm-build/main.cpp
-string
--
-iostream
--
-fstream
--
-vector
--
-../HMM/Fasta.h
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/Fasta.h
-../HMM/HMM.h
-/home/felix/CLionProjects/projet_bioinfo_wirth/src/HMM/HMM.h
+/home/felix/CLionProjects/EPITA-BioInfo-2023/projet_bioinfo_wirth/src/HMM/Fasta.h
 
