@@ -52,8 +52,8 @@ private:
     std::vector<std::vector<std::optional<float>>> e_I_;
     long N_{}; // Nombre d'états
     static char most_probable_char(std::vector<std::optional<float>> &vector);
-
-    static void round_matrix(std::vector<std::vector<std::optional<float>>> matrix);
+    // Tests non concluants, mais pourrait servir si changement de consignes
+    [[maybe_unused]] static void round_matrix(std::vector<std::vector<std::optional<float>>> matrix);
 };
 
 

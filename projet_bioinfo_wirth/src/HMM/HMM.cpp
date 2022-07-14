@@ -383,7 +383,7 @@ char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     return '\0';
 }
 
-void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
+[[maybe_unused]] void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
     for (auto & line : matrix) {
         for (auto & element : line) {
             if (element.has_value()) {
