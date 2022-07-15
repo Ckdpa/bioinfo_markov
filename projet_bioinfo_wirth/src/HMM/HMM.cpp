@@ -395,29 +395,32 @@ void HMM::set_sequences(std::vector<std::vector<char>> sequences) {
 
 void HMM::viterbi() {
     // Matrice de score
-    std::vector<std::vector<std::optional<double>>> V;
+    std::vector<std::vector<std::optional<float>>> V;
     // Matrice retour
-    std::vector<std::vector<std::optional<double>>> B;
+    std::vector<std::vector<std::pair<int, int>>> B;
 
     // Compteurs
     // i position dans la HMM et ajout temporaire
     auto i = 0;
     int i_mod = 0;
     // Position dans la séquence et ajout temporaire
-    auto j = 0;
+    int j;
     int j_mod = 0;
-    // Valeur temporaire
-    double tmp = 0.;
+    // Valeurs temporaires
+    float tmp;
+    float v_i_j_value;
+    float max_value;
+    std::pair<int,int> max_coordinates;
     // epsilon
-    const double epsilon = 1e-20;
+    const float epsilon = 1e-20;
     // État actuel : On part toujours de M.
     HMMState current_state = HMMState::M;
-    auto transition_state = HMMState ::None;
+    HMMState transition_state;
 
     // Initialisation des matrices sans valeur
     for (auto line = 0; line < 3 * N_ + 1; line++) {
-        V.emplace_back(sequences_.back().size() + 1, std::optional<double>());
-        B.emplace_back(sequences_.back().size() + 1, std::optional<double>());
+        V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
+        B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
     }
     std::vector<float> values;
     while (i < 3 * N_ + 1) {
@@ -425,31 +428,33 @@ void HMM::viterbi() {
         transition_state = static_cast<HMMState>(index_of_max(T_[i], 1, 0, 3));
         j = 0;
         while (j < sequences_.back().size()) {
+            values.clear();
+            v_i_j_value = 0;
             // Calcul du modificateur appliqué et de l'ajout supplémentaire
             switch (current_state) {
                 case (HMMState::M): {
                     i_mod = 1;
                     j_mod = 1;
                     if (e_M_[i][alphabet[sequences_.back()[j]]].has_value()) {
-                        tmp = log(e_M_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                        v_i_j_value = logf(e_M_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
                     } else {
-                        tmp = log(epsilon);
+                        v_i_j_value = logf(epsilon);
                     }
                     break;
                 }
                 case (HMMState::D): {
                     i_mod = 2;
                     j_mod = 0;
-                    tmp = 0;
+                    v_i_j_value = 0;
                     break;
                 }
                 case (HMMState::I): {
                     i_mod = 0;
                     j_mod = 1;
                     if (e_I_[i][alphabet[sequences_.back()[j]]].has_value()) {
-                        tmp = log(e_I_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                        v_i_j_value = logf(e_I_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
                     } else {
-                        tmp = log(epsilon);
+                        v_i_j_value = logf(epsilon);
                     }
                     break;
                 }
@@ -458,23 +463,36 @@ void HMM::viterbi() {
                     break;
                 }
             }
-            values.clear();
+            // Réinitialisation des compteurs
+            max_value = 0;
+            max_coordinates = {0,0};
             // Calculer les 3 valeurs si elles existent (check index)
-            // TODO
-            // Prendre le maximum
-            // TODO
-            // Sommer le maximum à tmp
-            // TODO
-            // Remplir V[i][j]
-            // TODO
-            // Étape retour ?
-            // TODO
+            for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
+                if (i - i_mod - tmp_mod >= 0 && j - j_mod >= 0) {
+                    tmp = max_value;
+                    max_value = logf(T_[i][i - i_mod - tmp_mod / 3].value() + epsilon);
+                    if (max_value > tmp) {
+                        max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
+                    }
+                    v_i_j_value += max_value;
+                    if (V[i - i_mod - tmp_mod][j - j_mod].has_value()) {
+                        v_i_j_value += V[i - i_mod - tmp_mod][j - j_mod].value();
+                    }
+                }
+                values.push_back(v_i_j_value);
+            }
+            // Prendre le maximum et le sommer à tmp
+            v_i_j_value += *std::max_element(values.begin(), values.end());
+            V[i][j] = v_i_j_value;
+            // Étape retour
+            B[i][j] = max_coordinates;
             j++;
         }
         // Update les states
         current_state = transition_state;
         i++;
     }
+    display_matrix(V);
 }
 
 char HMM::find_alphabet_value_of(size_t index) {
