@@ -24,6 +24,7 @@ inline double round( double val )
     if( val < 0 ) return ceil(val - 0.5);
     return floor(val + 0.5);
 }
+
 HMM::HMM(Fasta fasta, float alpha)
 :sequences_(fasta.parse()),
 marked_columns_(get_marked_columns(sequences_, alpha)),
@@ -401,11 +402,11 @@ void HMM::viterbi() {
 
     // Compteurs
     // i position dans la HMM et ajout temporaire
-    auto i = 0;
-    int i_mod = 0;
+    auto i = 2;
+    int i_mod;
     // Position dans la séquence et ajout temporaire
     int j;
-    int j_mod = 0;
+    int j_mod;
     // Valeurs temporaires
     float tmp;
     float v_i_j_value;
@@ -414,18 +415,33 @@ void HMM::viterbi() {
     // epsilon
     const float epsilon = 1e-20;
     // État actuel : On part toujours de M.
-    HMMState current_state = HMMState::M;
-    HMMState transition_state;
+    HMMState current_state;
 
     // Initialisation des matrices sans valeur
     for (auto line = 0; line < 3 * N_ + 1; line++) {
         V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
+        V[line][0] = 0;
         B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
     }
+    // Première ligne à 0 + première ligne à -inf peut-être
+    for (auto column = 0; column < V.back().size(); column ++) {
+        V[0][column] = 0;
+        // L'état D0 n'existe pas. Faut-il le mettre à -inf ? C'est déjà à 0, on aura -inf avec les calculs sur T
+        // V[1][column] = -1 * std::numeric_limits<float>::infinity();
+    }
+    V[0][0] = -1 * std::numeric_limits<float>::infinity();
     std::vector<float> values;
-    while (i < 3 * N_ + 1) {
+    while (i < 3 * N_) {
         // Calcul du prochain état
-        transition_state = static_cast<HMMState>(index_of_max(T_[i], 1, 0, 3));
+        if (i % 3 == 0) {
+            current_state = HMMState::M;
+        } else if (i % 3 == 1) {
+            current_state = HMMState::D;
+        } else if (i % 3 == 2) {
+            current_state = HMMState::I;
+        } else {
+            current_state = HMMState::None;
+        }
         j = 0;
         while (j < sequences_.back().size()) {
             values.clear();
@@ -435,8 +451,8 @@ void HMM::viterbi() {
                 case (HMMState::M): {
                     i_mod = 1;
                     j_mod = 1;
-                    if (e_M_[i][alphabet[sequences_.back()[j]]].has_value()) {
-                        v_i_j_value = logf(e_M_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                    if (e_M_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].has_value()) {
+                        v_i_j_value = logf(e_M_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].value() + epsilon);
                     } else {
                         v_i_j_value = logf(epsilon);
                     }
@@ -451,26 +467,26 @@ void HMM::viterbi() {
                 case (HMMState::I): {
                     i_mod = 0;
                     j_mod = 1;
-                    if (e_I_[i][alphabet[sequences_.back()[j]]].has_value()) {
-                        v_i_j_value = logf(e_I_[i][alphabet[sequences_.back()[j]]].value() + epsilon);
+                    if (e_I_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].has_value()) {
+                        v_i_j_value = logf(e_I_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].value() + epsilon);
                     } else {
                         v_i_j_value = logf(epsilon);
                     }
                     break;
                 }
-                case (HMMState::None): {
-                    // impossible
+                // Pas de case None, impossible
+                case HMMState::None: {
                     break;
                 }
             }
             // Réinitialisation des compteurs
             max_value = 0;
-            max_coordinates = {0,0};
+            max_coordinates = {0, 0};
             // Calculer les 3 valeurs si elles existent (check index)
             for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
                 if (i - i_mod - tmp_mod >= 0 && j - j_mod >= 0) {
                     tmp = max_value;
-                    max_value = logf(T_[i][i - i_mod - tmp_mod / 3].value() + epsilon);
+                    max_value = logf(T_[i / 3][i - i_mod - tmp_mod / 3].value() + epsilon);
                     if (max_value > tmp) {
                         max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
                     }
@@ -489,7 +505,6 @@ void HMM::viterbi() {
             j++;
         }
         // Update les states
-        current_state = transition_state;
         i++;
     }
     display_matrix(V);
