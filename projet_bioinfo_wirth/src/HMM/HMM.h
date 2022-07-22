@@ -35,6 +35,8 @@ public:
 
     void viterbi();
 
+    void viterbook();
+
     void set_sequences(std::vector<std::vector<char>> sequences);
 
 private:

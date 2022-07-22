@@ -312,11 +312,17 @@ std::vector<HMM::HMMState> HMM::build_Pi_k(const std::vector<char>& sequence) {
 void HMM::build_print_genseq() {
     std::string sequence;
     std::string states_sequence;
-    HMMState current_state;
+    HMMState current_state = HMMState::M;
+    auto k_i = 1;
+    bool was_i = false;
+    auto chain_index = 0;
     // Première itération, pour connaître le prochain état
+    /*
     if (T_[0][1].value() > T_[0][0].value()) {
         if (T_[0][2].value() > T_[0][1].value()) {
             current_state = HMMState::I;
+            was_i = true;
+            k_i ++;
         } else {
             current_state = HMMState::D;
         }
@@ -327,47 +333,45 @@ void HMM::build_print_genseq() {
             current_state = HMMState::M;
         }
     }
-    auto k_i = 0;
-    bool was_i = false;
-    auto chain_index = 0;
+     */
     while(chain_index < N_) {
-        switch (current_state) {
-            case HMMState::M:
-                states_sequence.push_back('M');
-                break;
-            case HMMState::D:
-                states_sequence.push_back('D');
-                break;
-            case HMMState::I:
-                states_sequence.push_back('I');
-                break;
-            case HMMState::None:
-                break;
-        }
-        if (current_state == HMMState::I) {
-            if (was_i) {
-                k_i++;
-            }
-            was_i = true;
-        } else {
-            was_i = false;
-            k_i = 1;
-        }
-        if (current_state == HMMState::M) {
-            if (chain_index != 0) {
-                sequence.push_back(most_probable_char(e_M_[chain_index]));
-            }
-        } else if (current_state == HMMState::I) {
-            sequence.push_back(most_probable_char(e_I_[chain_index]));
-        } else {
-            sequence.push_back('-');
-        }
         current_state = static_cast<HMMState>(index_of_max(T_[chain_index],
                                                            k_i,
                                                            static_cast<int>(current_state) * 3,
                                                            static_cast<int>(current_state) * 3 + 3) % 3);
+
         if (current_state == HMMState::M || current_state == HMMState::D) {
             chain_index++;
+        }
+        if (chain_index < N_) {
+            switch (current_state) {
+                case HMMState::M:
+                    states_sequence.push_back('M');
+                    was_i = false;
+                    k_i = 1;
+                    break;
+                case HMMState::D:
+                    states_sequence.push_back('D');
+                    was_i = false;
+                    k_i = 1;
+                    break;
+                case HMMState::I:
+                    states_sequence.push_back('I');
+                    if (was_i) {
+                        k_i += 1;
+                    }
+                    was_i = true;
+                    break;
+                case HMMState::None:
+                    break;
+            }
+            if (current_state == HMMState::M) {
+                sequence.push_back(most_probable_char(e_M_[chain_index]));
+            } else if (current_state == HMMState::I) {
+                sequence.push_back(most_probable_char(e_I_[chain_index]));
+            } else {
+                sequence.push_back('-');
+            }
         }
     }
     std::cout << sequence << std::endl;
@@ -542,4 +546,56 @@ std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_facto
         }
     }
     return max_index;
+}
+
+
+void HMM::viterbook() {
+    // Matrice de score
+    std::vector<std::vector<std::optional<float>>> V;
+    // Matrice retour
+    std::vector<std::vector<std::pair<int, int>>> B;
+
+
+    std::pair<int,int> max_coordinates;
+
+    // epsilon
+    const float epsilon = 1e-20;
+
+    // Initialisation des matrices sans valeur, sauf V[0][0] = 0
+    B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
+    for (auto line = 0; line < 3 * N_ + 1; line++) {
+        V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
+        B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
+    }
+    V[0][0] = 0;
+    // Itération selon les lignes i
+    float tmp;
+    for (int i = 0; i < 3 * N_; i++) {
+        // Itération selon les colonnes j
+        for (int j = 0; j < sequences_.back().size() + 1; j++) {
+            // État m → V_M
+            tmp = 0;
+            if (i % 3 == 0) {
+                if (e_M_[i / 3][alphabet[sequences_.back()[j]]].has_value()) {
+                    V[i][j] = log(e_M_[i / 3][alphabet[sequences_.back()[j]]].has_value());
+                } else {
+                    tmp = 0;
+                }
+                //tmp += log(T_[] * exp(V[i / 3][j - 1].value()));
+            }
+            // État D → V_D
+            else if (i % 3 == 1) {
+
+            }
+            // État I → V_I
+            else {
+
+            }
+            for (int state = 0; state < 3; state++) {
+
+            }
+        }
+    }
+    // Compute final score V_M_L+1(n) (111)
+    display_matrix(V);
 }
