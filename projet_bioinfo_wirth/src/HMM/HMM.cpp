@@ -319,24 +319,6 @@ void HMM::build_print_genseq() {
     auto k_i = 1;
     bool was_i = false;
     auto chain_index = 0;
-    // Première itération, pour connaître le prochain état
-    /*
-    if (T_[0][1].value() > T_[0][0].value()) {
-        if (T_[0][2].value() > T_[0][1].value()) {
-            current_state = HMMState::I;
-            was_i = true;
-            k_i ++;
-        } else {
-            current_state = HMMState::D;
-        }
-    } else {
-        if (T_[0][2].value() > T_[0][0].value()) {
-            current_state = HMMState::I;
-        } else {
-            current_state = HMMState::M;
-        }
-    }
-     */
     while(chain_index < N_) {
         current_state = static_cast<HMMState>(index_of_max(T_[chain_index],
                                                            k_i,
