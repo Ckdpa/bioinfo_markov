@@ -19,7 +19,7 @@ std::map<const char, int> HMM::alphabet = {{'A', 0}, {'C', 1}, {'D', 2}, {'E', 3
 std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor=1, std::size_t start=0, std::size_t stop=0);
 
 // Helper function 2
-inline double round( double val )
+inline float round(float val )
 {
     if( val < 0 ) return ceil(val - 0.5);
     return floor(val + 0.5);
@@ -273,6 +273,9 @@ void HMM::normalize_matrixes() {
 
         }
     }
+    round_matrix(T_);
+    round_matrix(e_M_);
+    round_matrix(e_I_);
 }
 
 std::vector<HMM::HMMState> HMM::build_Pi_k(const std::vector<char>& sequence) {
@@ -388,7 +391,7 @@ char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     for (auto & line : matrix) {
         for (auto & element : line) {
             if (element.has_value()) {
-                element = round(element.value());
+                element = round((element.value() * 1000) / 1000);
             }
         }
     }
