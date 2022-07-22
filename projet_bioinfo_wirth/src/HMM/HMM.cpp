@@ -344,8 +344,9 @@ void HMM::build_print_genseq() {
                     states_sequence.push_back('I');
                     if (was_i) {
                         k_i += 1;
+                    } else {
+                        was_i = true;
                     }
-                    was_i = true;
                     break;
                 case HMMState::None:
                     break;
@@ -511,12 +512,13 @@ char HMM::find_alphabet_value_of(size_t index) {
 
 // Helper function
 std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor, std::size_t start, std::size_t stop) {
-    std::size_t max_index = 0;
+
     auto value = 0.;
     if (start == stop) {
         start = 0;
         stop = vector.size();
     }
+    std::size_t max_index = start;
     for (auto index = start; index < stop; index++) {
         // Raise to the power i_factor (used when searching for the next state)
         if (index % 3 == 2 && i_factor != 1) {
