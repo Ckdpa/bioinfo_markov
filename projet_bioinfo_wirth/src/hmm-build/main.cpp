@@ -2,8 +2,6 @@
 // Created by felix on 08/07/22.
 //
 
-#include <string>
-#include <iostream>
 #include <vector>
 #include "../HMM/Fasta.h"
 #include "../HMM/HMM.h"

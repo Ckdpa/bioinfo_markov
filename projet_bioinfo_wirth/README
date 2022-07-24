@@ -1,8 +1,46 @@
-Bienvenue sur le projet de Bio-Informatique de la majeure Santé promotion 2023.
+# Bienvenue sur le projet de Bio-Informatique de la majeure Santé promotion 2023.
 
 Développement de 3 binaires en C++ pour générer et utiliser un modèle de Markov caché à partir d'un alignement de
-séquence.
+séquence en utilisant les chaînes de markov cachées (HMM) : HMM-build, HMM-genseq, HMM-align
 
+## Dépendances
 Requiert :
- -C++20 (cpp2a)
- -CMake
+ -C++17
+ -CMake (>=3.18) et make OU g++
+
+## Installation :
+### Avec CMake version 3.18 minimum
+CMake permet de facilement générer un makefile dans répertoire quelconque et d'y compiler les binaire.
+Le cas le plus propre est de créer un répertoire temporaire, et d'y appeler CMake :
+mkdir build && cd build
+cmake ..
+make
+
+### Avec g++ (compilateur de base de C++)
+C'est plus rudimentaire, mais ça fonctionne (certainement plus lentement).
+mdkir build && cd build
+g++ ../src/HMM/*.cpp ../src/hmm-build/main.cpp --std=c++17 -o HMM-build
+g++ ../src/HMM/*.cpp ../src/hmm-genseq/main.cpp --std=c++17 -o HMM-genseq
+g++ ../src/HMM/*.cpp ../src/hmm-align/main.cpp --std=c++17 -o HMM-align
+
+## Utilisation
+
+### Cas général
+Les fichiers créés sont exécutables directement avec :
+./binaire arguments
+
+### Attentes sur les arguments
+Comme le sujet décrit des arguments d'entrées 'toujours valides', aucune vérification n'est faite.
+L'ordre attendu des arguments et le même que celui des tests fournis :
+
+#### HMM-build
+./HMM-build path/to/fasta alpha
+
+#### HMM-genseq
+./HMM-genseq path/to/model
+
+#### HMM-align
+./HMM-align [--score] path/to/model path/to/fasta
+
+## Out
+Réalisé par Félix Wirth, EPITA Santé 2023

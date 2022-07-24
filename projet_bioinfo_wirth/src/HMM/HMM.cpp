@@ -8,23 +8,53 @@
 #include <valarray>
 #include "HMM.h"
 
-std::map<const char, int> HMM::alphabet = {{'A', 0}, {'C', 1}, {'D', 2}, {'E', 3},
+std::map<const char, std::size_t> HMM::alphabet = {{'A', 0}, {'C', 1}, {'D', 2}, {'E', 3},
                                                         {'F', 4}, {'G', 5}, {'H', 6}, {'I', 7},
                                                         {'K', 8}, {'L', 9}, {'M', 10}, {'N', 11},
                                                         {'P', 12}, {'Q', 13}, {'R', 14},
                                                         {'S', 15}, {'T', 16}, {'V', 17},
                                                         {'W', 18}, {'Y', 19}};
 
-// Helper function
-std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor=1, std::size_t start=0, std::size_t stop=0);
 
-// Helper function 2
+// UTILS
+// Arrondir utilisé (avant d'écrire les matrices)
 inline float round(float val )
 {
     if( val < 0 ) return ceil(val - 0.5);
     return floor(val + 0.5);
 }
 
+// Trouver le maximum d'un vecteur entre un point de départ et d'arrivée (ou tout le vecteur par défaut.)
+// Le i_factor permet d'appliquer une puissance toutes les valeurs = 2 [mod 3]. Utile pour HMM-genseq.
+// Les paramètres par défaut permettent de l'utiliser sans prêter attention à ces particularités, auquel cas on retourne
+// simplement le maximum du vecteur
+std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor=1, std::size_t start=0, std::size_t stop=0);
+// Implémentation
+std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor, std::size_t start, std::size_t stop) {
+
+    auto value = 0.;
+    if (start == stop) {
+        start = 0;
+        stop = vector.size();
+    }
+    std::size_t max_index = start;
+    for (auto index = start; index < stop; index++) {
+        // Raise to the power i_factor (used when searching for the next state)
+        if (index % 3 == 2 && i_factor != 1) {
+            if (std::pow(vector[index].value(), i_factor) > value) {
+                value = std::pow(vector[index].value(), i_factor);
+                max_index = index;
+            }
+        }
+        else if (vector[index].value() > value) {
+            value = vector[index].value();
+            max_index = index;
+        }
+    }
+    return max_index;
+}
+
+// Constructeur à partir d'un fichier fasta et d'un alpha (utilisé pour HMM-build)
 HMM::HMM(Fasta fasta, float alpha)
 :sequences_(fasta.parse()),
 marked_columns_(get_marked_columns(sequences_, alpha)),
@@ -49,6 +79,7 @@ N_(std::count(marked_columns_.begin(),marked_columns_.end(), true) + 1 )
     T_[0][5] = 0.;
 }
 
+// Constructeur à partir d'un fichier (utilisé par HMM-genseq, HMM-align)
 HMM::HMM(const std::string& model_file) {
     // parse the model
     std::ifstream input(model_file);
@@ -93,11 +124,13 @@ HMM::HMM(const std::string& model_file) {
         }
     }
 }
+
+// Calcul des colonnes marquées : Si une colonne a en moyenne moins de alpha '-', elle est marquée.
 std::vector<bool> HMM::get_marked_columns(const std::vector<std::vector<char>>& sequences, float alpha) {
     std::vector<bool> ret;
     std::vector<float> acc(sequences[0].size(), 0.0);
     for (auto seq : sequences) {
-        for (auto i = 0; i < seq.size(); i++){
+        for (std::size_t i = 0; i < seq.size(); i++){
             if (seq[i] == '-') {
                 acc[i]++;
             }
@@ -113,6 +146,7 @@ std::vector<bool> HMM::get_marked_columns(const std::vector<std::vector<char>>& 
     return ret;
 }
 
+// Écriture du modèle comme demandé dans HMM-build
 void HMM::print_model() const {
 #ifdef DEBUG
     for (bool mark : marked_columns_) {
@@ -120,6 +154,7 @@ void HMM::print_model() const {
     }
     std::cout<< std::endl;
 #endif
+    // 3 chiffres après la virgule
     std::cout << std::setprecision(3) << std::fixed;
     std::cout << N_ << std::endl;
     display_matrix(T_);
@@ -127,9 +162,10 @@ void HMM::print_model() const {
     display_matrix(e_I_);
 }
 
+// Écriture de matrice, ligne apr ligne, si la valeur existe
 void HMM::display_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
     for (auto & line : matrix) {
-        for (auto j = 0; j < line.size(); j++) {
+        for (std::size_t j = 0; j < line.size(); j++) {
             if (line[j].has_value()) {
                 std::cout << line[j].value();
             } else {
@@ -144,10 +180,11 @@ void HMM::display_matrix(std::vector<std::vector<std::optional<float>>> matrix) 
     }
 }
 
+// Algorithme de construction de modèle (HMM-build)
 void HMM::build_model() {
     // Pour chaque séquence Ak de A
     std::vector<HMMState> Pi_k;
-    int l_count; // l
+    std::size_t l_count; // l
     int model_column; // u
     // Pour chaque séquence de A_k
     for (auto & A_k : sequences_) {
@@ -205,7 +242,7 @@ void HMM::build_model() {
                             e_I_[model_column][alphabet[A_k[l_count]]].value() + 1;
                 }
             }
-            int i = l_count + 1;
+            std::size_t i = l_count + 1;
             // Inutile de checker la size, la séquence est toujours finie par M.
             // On cherche le prochain état valide (non None)
             while (Pi_k[i] == HMMState::None) {
@@ -220,25 +257,27 @@ void HMM::build_model() {
         }
     }
     normalize_matrixes();
-    /* Test pour voir si ça marche mieux (non, même nombre d'erreur)
+    // Ne donne pas de meilleurs résultats, mais pour la forme
     round_matrix(T_);
     round_matrix(e_M_);
     round_matrix(e_I_);
-     */
 }
 
+// Normalisation pour HMM-build
 void HMM::normalize_matrixes() {
     float sum_t;
     float sum_i;
     float sum_m;
-    // Normalize T : For each line, the sum of probabilities for each state is 1
+    // T : Pour chaque ligne
     for (auto i = 0; i < N_; i++) {
-        // Compute sum per state
+        // Pour chaque état (M, D, I)
         for (auto state = 0; state < 3; state++) {
             sum_t = 0;
+            // Calcul de la somme par état (M, D, I)
             for (auto transition = 0; transition < 3; transition++) {
                 sum_t += T_[i][3 * state + transition].value();
             }
+            // Normalisation par état (M, D, I)
             if (sum_t != 0) {
                 for (auto transition = 0; transition < 3; transition++) {
                     T_[i][3 * state + transition].value() =
@@ -247,37 +286,37 @@ void HMM::normalize_matrixes() {
             }
         }
     }
-    // Normalize E_m : Sum of all columns per lines>0 = 1
+    // e_M : La somme de chaque ligne vaut 1 (on ignore la première ligne de NAN)
     for (auto line = 1; line < N_; line++) {
         sum_m = 0;
-        // Compute sum
+        // Somme
         for (auto column = 0; column < 20; column++) {
             sum_m += e_M_[line][column].value();
 
         }
+        // Normalisation
         for (auto column = 0; column < 20; column++) {
             e_M_[line][column]  = e_M_[line][column].value() / sum_m;
 
         }
     }
-    // Normalize E_i : Sum of all columns per line = 1
+    // e_I : La somme de chaque ligne vaut 1
     for (auto line = 0; line < N_; line++) {
         sum_i = 0;
-        // Compute sum
+        // Somme
         for (auto column = 0; column < 20; column++) {
             sum_i += e_I_[line][column].value();
 
         }
+        // Normalisation
         for (auto column = 0; column < 20; column++) {
             e_I_[line][column] = e_I_[line][column].value() / sum_i;
 
         }
     }
-    round_matrix(T_);
-    round_matrix(e_M_);
-    round_matrix(e_I_);
 }
 
+// Construction de Pi_k à partir des séquences (HMM-build)
 std::vector<HMM::HMMState> HMM::build_Pi_k(const std::vector<char>& sequence) {
     std::vector<HMMState> ret;
     auto column_count = 0;
@@ -312,65 +351,85 @@ std::vector<HMM::HMMState> HMM::build_Pi_k(const std::vector<char>& sequence) {
 }
 
 
+// HMM-genseq
 void HMM::build_print_genseq() {
+    // Les valeurs à écrire en sortie
     std::string sequence;
     std::string states_sequence;
+    // On part toujours de l'état M
     HMMState current_state = HMMState::M;
+    // Compteurs pour éviter les boucles infinies sur I
     auto k_i = 1;
     bool was_i = false;
+    // Initialisation au rang 0 du modèle
     auto chain_index = 0;
+    // Pour chaque rang du modèle
     while(chain_index < N_) {
+        // Calcul du prochain état : on cherche la probabilité la plus haute de l'ancien état
         current_state = static_cast<HMMState>(index_of_max(T_[chain_index],
                                                            k_i,
                                                            static_cast<int>(current_state) * 3,
                                                            static_cast<int>(current_state) * 3 + 3) % 3);
-
+        // Si l'état est M ou D, incrémenter le rang
         if (current_state == HMMState::M || current_state == HMMState::D) {
             chain_index++;
         }
+        // Si nous ne sommes pas au bout du modèle, ajouter l'état actuel à la séquence d'état
         if (chain_index < N_) {
             switch (current_state) {
                 case HMMState::M:
                     states_sequence.push_back('M');
+                    // Réinitialisation des compteurs de l'état I
                     was_i = false;
                     k_i = 1;
                     break;
                 case HMMState::D:
                     states_sequence.push_back('D');
+                    // Réinitialisation des compteurs de l'état I
                     was_i = false;
                     k_i = 1;
                     break;
                 case HMMState::I:
                     states_sequence.push_back('I');
+                    // Si nous étions déjà sur un état I (et donc qu'on boucle sur I), incrémenter le facteur de
+                    // puissance à appliquer à la probabilité de transition de I à I
                     if (was_i) {
                         k_i += 1;
                     } else {
+                        // Premier état I
                         was_i = true;
                     }
                     break;
                 case HMMState::None:
+                    // Impossible, pour la forme
                     break;
             }
+            // Si c'est un état M, on ajoute à la chaîne le caractère d'émission d'état M le plus probable à ce rang du
+            // modèle
             if (current_state == HMMState::M) {
                 sequence.push_back(most_probable_char(e_M_[chain_index]));
-            } else if (current_state == HMMState::I) {
+            } else if (current_state == HMMState::I) { // Similaire pour I
                 sequence.push_back(most_probable_char(e_I_[chain_index]));
-            } else {
+            } else { // C'est un état D (deletion), on ajoute un '-'
                 sequence.push_back('-');
             }
         }
     }
+    // Écriture des résultats sur la sortie standard.
     std::cout << sequence << std::endl;
     std::cout << states_sequence << std::endl;
 }
 
-
+// Recherche du caractère le plus probable
 char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
+    // Index
     auto max_index = index_of_max(vector);
+    // Reverse find
     return find_alphabet_value_of(max_index);
 }
 
-[[maybe_unused]] void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
+// Arrondi
+void HMM::round_matrix(std::vector<std::vector<std::optional<float>>> matrix) {
     for (auto & line : matrix) {
         for (auto & element : line) {
             if (element.has_value()) {
@@ -380,17 +439,18 @@ char HMM::most_probable_char(std::vector<std::optional<float>> &vector) {
     }
 }
 
+// Setter
 void HMM::set_sequences(std::vector<std::vector<char>> sequences) {
     sequences_ = std::move(sequences);
 }
 
+// HMM-align
 void HMM::viterbi(bool score) {
     // Matrice de score
     std::vector<std::vector<std::optional<float>>> V;
     // Matrice retour
-    std::vector<std::vector<std::pair<int, int>>> B;
+    std::vector<std::vector<std::pair<std::size_t, std::size_t>>> B;
 
-    // Compteurs
     // Modificateurs temporaires sur i et j
     int i_mod;
     int j_mod;
@@ -398,7 +458,7 @@ void HMM::viterbi(bool score) {
     float tmp;
     float v_i_j_value;
     float max_value;
-    std::pair<int,int> max_coordinates;
+    std::pair<std::size_t, std::size_t> max_coordinates;
     // epsilon
     const float epsilon = 1e-20;
 
@@ -406,17 +466,17 @@ void HMM::viterbi(bool score) {
     for (auto line = 0; line < 3 * N_ + 1; line++) {
         V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
         V.back()[0] = -1 * std::numeric_limits<float>::infinity();
-        B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
+        B.emplace_back(sequences_.back().size() + 1, std::pair<std::size_t, std::size_t>());
     }
     // Première et seconde ligne à -inf
-    for (auto column = 0; column < V.back().size(); column ++) {
+    for (std::size_t column = 0; column < V.back().size(); column ++) {
         V[0][column] = -1 * std::numeric_limits<float>::infinity();
         V[1][column] = -1 * std::numeric_limits<float>::infinity();
     }
     // Sauf V[0][0] = 0
     V[0][0] = 0;
     for(auto i = 2; i < 3 * N_ + 1; i++) {
-        for (auto j = 1; j < sequences_.back().size() + 1; j++) {
+        for (std::size_t j = 1; j < sequences_.back().size() + 1; j++) {
             // Calcul du prochain état : en fonction de i % 3 : 0 -> M; 1 -> D; 2 -> I (else none pour la forme)
             // Pour chaque état, calcul du modificateur d'index sur i et j ainsi que de la valeur v_i_j propre à chaque
             // état. L'usage des modificateurs permet d'avoir une formule unique dans le calcul du max, car les valeurs
@@ -462,7 +522,7 @@ void HMM::viterbi(bool score) {
             }
             // Ajouter le maximum au terme d'émission et sauvegarder
             V[i][j] = v_i_j_value + max_value;
-            // Étape retour
+            // Étape retour : on retient les coordonnées de la case maximale utilisée pour remplir V[i][j]
             B[i][j] = max_coordinates;
         }
     }
@@ -477,12 +537,14 @@ void HMM::viterbi(bool score) {
     // Debug : print B
     display_matrix(B);
 #endif
-
-    // Étape retour : construction des états et de la séquence alignée
-    std::pair<int, int> current_cell = B.back().back();
+    // Étape retour : construction des états et de la séquence alignée : on part de la case en bas à droite de V
+    std::pair<std::size_t, std::size_t> current_cell = B.back().back();
     std::string sequence{};
     std::string states_sequence{};
+    // Tant que nous n'avons pas atteint un bord (vraisemblablement 0,0)
     while (current_cell.first != 0 && current_cell.second != 0) {
+        // Calcul de l'état actuel : la ligne sur laquelle on se trouve % 3 (0=M, 1=D, 2=I)
+        // On ajoute l'état actuel au début de la liste d'état (car on reconstruit à l'envers la liste d'états)
         switch (static_cast<HMMState>(current_cell.first % 3)) {
             case HMMState::M:
                 states_sequence.insert(0, 1,'M');
@@ -496,13 +558,18 @@ void HMM::viterbi(bool score) {
             case HMMState::None:
                 break;
         }
+        // État suivant
         current_cell = B[current_cell.first][current_cell.second];
     }
+    // Reconstruction de la liste d'acides aminés
     auto sequence_index = 0;
+    // Pour chaque état
     for (const char & state_count : states_sequence) {
+        // Si c'est un M ou I : ajouter la première lettre non déjà écrite
         if (state_count == 'M' || state_count == 'I') {
             sequence.push_back(sequences_.back()[sequence_index++]);
         } else {
+            // Sinon, ajouter un '-' pour marquer la deletion
             sequence.push_back('-');
         }
     }
@@ -511,6 +578,7 @@ void HMM::viterbi(bool score) {
     std::cout << states_sequence << std::endl;
 }
 
+// Reverse find dans la map (alphabet)
 char HMM::find_alphabet_value_of(size_t index) {
     for (auto & mapping : alphabet) {
         if (mapping.second == index) {
@@ -520,9 +588,11 @@ char HMM::find_alphabet_value_of(size_t index) {
     return 0;
 }
 
-void HMM::display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix) {
+// Surcharge de display_matrix pour écrire la matrice de paire. Utilisée en débug pour écrire B la matrice retour de
+// HMM-align
+void HMM::display_matrix(std::vector<std::vector<std::pair<std::size_t, std::size_t>>> matrix) {
     for (auto & line : matrix) {
-        for (auto j = 0; j < line.size(); j++) {
+        for (std::size_t j = 0; j < line.size(); j++) {
                 std::cout << "[" << line[j].first << " " << line[j].second << ']';
             if (j != line.size() - 1) {
                 std::cout << ',';
@@ -531,30 +601,4 @@ void HMM::display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix) {
             }
         }
     }
-}
-
-
-// Helper function
-std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_factor, std::size_t start, std::size_t stop) {
-
-    auto value = 0.;
-    if (start == stop) {
-        start = 0;
-        stop = vector.size();
-    }
-    std::size_t max_index = start;
-    for (auto index = start; index < stop; index++) {
-        // Raise to the power i_factor (used when searching for the next state)
-        if (index % 3 == 2 && i_factor != 1) {
-            if (std::pow(vector[index].value(), i_factor) > value) {
-                value = std::pow(vector[index].value(), i_factor);
-                max_index = index;
-            }
-        }
-        else if (vector[index].value() > value) {
-            value = vector[index].value();
-            max_index = index;
-        }
-    }
-    return max_index;
 }
