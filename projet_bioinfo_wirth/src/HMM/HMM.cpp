@@ -421,35 +421,34 @@ void HMM::viterbi(bool score) {
             // Pour chaque état, calcul du modificateur d'index sur i et j ainsi que de la valeur v_i_j propre à chaque
             // état. L'usage des modificateurs permet d'avoir une formule unique dans le calcul du max, car les valeurs
             // à tester sont les mêmes à un facteur constant prêt dans les 3 cas.
-            if (i % 3 == 0) {
+            if (i % 3 == 0) /* État M */ {
                 i_mod = 1;
                 j_mod = 1;
                 // Calcul de la "constante" en fonction de e_M
                 if (i < 3 * N_) {
-                    v_i_j_value = logf(e_M_[i / 3][alphabet[sequences_.back()[j]]].value() + epsilon);
+                    v_i_j_value = logf(e_M_[i / 3][alphabet[sequences_.back()[j - 1]]].value() + epsilon);
                 } else {
                     v_i_j_value = 0;
                 }
 
-            } else if (i % 3 == 1) {
+            } else if (i % 3 == 1) /* État D */ {
                 i_mod = 2;
                 j_mod = 0;
                 // Réinitialisation des compteurs
                 // La "constante" vaut 0, car c'est un état D
                 v_i_j_value = 0;
 
-            } else if (i % 3 == 2) {
+            } else if (i % 3 == 2) /* État I */ {
                 i_mod = 0;
                 j_mod = 1;
                 // Calcul de la "constante" en fonction de e_I
-                v_i_j_value = logf(e_I_[i / 3][alphabet[sequences_.back()[j]]].value() + epsilon);
+                v_i_j_value = logf(e_I_[i / 3][alphabet[sequences_.back()[j - 1]]].value() + epsilon);
             }
             // Calculer les 3 valeurs si elles existent (check index)
             // Réinitialisation de la recherche de max
             max_value = -1 * std::numeric_limits<float>::infinity();
             max_coordinates = {};
-            // Calcul du maximum des 3 valeurs recherchées, y ajouter la valeur propre à chaque état et sauvegarder
-            // dans V. On utilise tmp mod pour itérer sur les 3 valeurs
+            // Calcul du maximum des 3 valeurs recherchées. On utilise tmp mod pour itérer sur les 3 valeurs
             for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
                 // Calcul de V[][] + log(T[][])
                 tmp = V[i - i_mod - tmp_mod][j - j_mod].value() +
@@ -460,6 +459,7 @@ void HMM::viterbi(bool score) {
                     max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
                 }
             }
+            // Ajouter le maximum au terme d'émission et sauvegarder
             V[i][j] = v_i_j_value + max_value;
             // Étape retour
             B[i][j] = max_coordinates;
@@ -484,15 +484,12 @@ void HMM::viterbi(bool score) {
         switch (static_cast<HMMState>(current_cell.first % 3)) {
             case HMMState::M:
                 states_sequence.insert(0, 1,'M');
-                sequence.push_back(sequences_.back()[count]);
                 break;
             case HMMState::D:
                 states_sequence.insert(0, 1,'D');
-                sequence.push_back('-');
                 break;
             case HMMState::I:
                 states_sequence.insert(0, 1,'I');
-                sequence.push_back(sequences_.back()[count]);
                 break;
             case HMMState::None:
                 break;
@@ -500,14 +497,16 @@ void HMM::viterbi(bool score) {
         current_cell = B[current_cell.first][current_cell.second];
         count++;
     }
+    for (auto state_count = 0; state_count < states_sequence.size(); state_count++) {
+        if (states_sequence[state_count] == 'M' || states_sequence[state_count] == 'I') {
+            sequence.push_back(sequences_.back()[state_count]);
+        } else {
+            sequence.push_back('-');
+        }
+    }
+    // output : print les séquences
     std::cout << sequence << std::endl;
     std::cout << states_sequence << std::endl;
-
-    // Débug : print la séquence de base
-    for (const auto & c : sequences_.back()) {
-        std::cout << c;
-    }
-    std::cout  << std::endl;
 }
 
 char HMM::find_alphabet_value_of(size_t index) {
