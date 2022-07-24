@@ -447,6 +447,7 @@ void HMM::viterbi(bool score) {
             // Calculer les 3 valeurs si elles existent (check index)
             // Réinitialisation de la recherche de max
             max_value = -1 * std::numeric_limits<float>::infinity();
+            max_coordinates = {};
             // Calcul du maximum des 3 valeurs recherchées, y ajouter la valeur propre à chaque état et sauvegarder
             // dans V. On utilise tmp mod pour itérer sur les 3 valeurs
             for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
@@ -464,18 +465,49 @@ void HMM::viterbi(bool score) {
             B[i][j] = max_coordinates;
         }
     }
+    // Option --score : display le score et quitter
     if (score) {
         std::cout << std::setprecision(3) << std::fixed << V.back().back().value() << std::endl;
         return;
     }
-    // TODO : étape retour
     // Debug : print V
     display_matrix(V);
-    //TODO : implement display for pair
-    /*
-    std::cout << std::endl;
+    // Debug : print B
     display_matrix(B);
-     */
+
+    // Étape retour : construction des états et de la séquence alignée
+    std::pair<int, int> current_cell = B.back().back();
+    std::string sequence{};
+    std::string states_sequence{};
+    int count = 0;
+    while (current_cell != std::pair<int,int>{0, 0}) {
+        switch (static_cast<HMMState>(current_cell.first % 3)) {
+            case HMMState::M:
+                states_sequence.insert(0, 1,'M');
+                sequence.push_back(sequences_.back()[count]);
+                break;
+            case HMMState::D:
+                states_sequence.insert(0, 1,'D');
+                sequence.push_back('-');
+                break;
+            case HMMState::I:
+                states_sequence.insert(0, 1,'I');
+                sequence.push_back(sequences_.back()[count]);
+                break;
+            case HMMState::None:
+                break;
+        }
+        current_cell = B[current_cell.first][current_cell.second];
+        count++;
+    }
+    std::cout << sequence << std::endl;
+    std::cout << states_sequence << std::endl;
+
+    // Débug : print la séquence de base
+    for (const auto & c : sequences_.back()) {
+        std::cout << c;
+    }
+    std::cout  << std::endl;
 }
 
 char HMM::find_alphabet_value_of(size_t index) {
@@ -485,6 +517,19 @@ char HMM::find_alphabet_value_of(size_t index) {
         }
     }
     return 0;
+}
+
+void HMM::display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix) {
+    for (auto & line : matrix) {
+        for (auto j = 0; j < line.size(); j++) {
+                std::cout << "[" << line[j].first << " " << line[j].second << ']';
+            if (j != line.size() - 1) {
+                std::cout << ',';
+            } else {
+                std::cout << std::endl;
+            }
+        }
+    }
 }
 
 

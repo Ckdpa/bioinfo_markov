@@ -47,6 +47,7 @@ private:
     std::vector<HMMState> build_Pi_k(const std::vector<char>& sequence);
     static std::map<const char, int> alphabet;
     static void display_matrix(std::vector<std::vector<std::optional<float>>> matrix);
+    static void display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix);
     static std::vector<bool> get_marked_columns(const std::vector<std::vector<char>>& sequences, float alpha);
     std::vector<std::vector<char>> sequences_;
     std::vector<bool> marked_columns_;
