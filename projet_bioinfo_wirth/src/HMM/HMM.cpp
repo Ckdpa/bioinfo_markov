@@ -482,8 +482,7 @@ void HMM::viterbi(bool score) {
     std::pair<int, int> current_cell = B.back().back();
     std::string sequence{};
     std::string states_sequence{};
-    int count = 0;
-    while (current_cell != std::pair<int,int>{0, 0}) {
+    while (current_cell.first != 0 && current_cell.second != 0) {
         switch (static_cast<HMMState>(current_cell.first % 3)) {
             case HMMState::M:
                 states_sequence.insert(0, 1,'M');
@@ -498,11 +497,11 @@ void HMM::viterbi(bool score) {
                 break;
         }
         current_cell = B[current_cell.first][current_cell.second];
-        count++;
     }
-    for (auto state_count = 0; state_count < states_sequence.size(); state_count++) {
-        if (states_sequence[state_count] == 'M' || states_sequence[state_count] == 'I') {
-            sequence.push_back(sequences_.back()[state_count]);
+    auto sequence_index = 0;
+    for (const char & state_count : states_sequence) {
+        if (state_count == 'M' || state_count == 'I') {
+            sequence.push_back(sequences_.back()[sequence_index++]);
         } else {
             sequence.push_back('-');
         }
