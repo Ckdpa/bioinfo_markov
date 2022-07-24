@@ -7,14 +7,16 @@
 #include "../HMM/HMM.h"
 
 int main(int argc, char *argv[]) {
-    HMM hmm(argv[1]);
-    hmm.set_sequences(Fasta(argv[2]).parse());
-    std::cout << "VITERBI\n";
-    hmm.viterbi();
-    std::cout << "VITERBOOK\n";
-    hmm.viterbook();
-    if (argv[3] && !strcmp(argv[3], "--score")) {
-
+    bool score = false;
+    int begin = 1;
+    for (int i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], "--score")) {
+            score = true;
+            begin = i + 1;
+        }
     }
+    HMM hmm(argv[begin]);
+    hmm.set_sequences(Fasta(argv[begin + 1]).parse());
+    hmm.viterbi(score);
     return 0;
 }

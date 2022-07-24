@@ -384,120 +384,98 @@ void HMM::set_sequences(std::vector<std::vector<char>> sequences) {
     sequences_ = std::move(sequences);
 }
 
-void HMM::viterbi() {
+void HMM::viterbi(bool score) {
     // Matrice de score
     std::vector<std::vector<std::optional<float>>> V;
     // Matrice retour
     std::vector<std::vector<std::pair<int, int>>> B;
 
     // Compteurs
-    // i position dans la HMM et ajout temporaire
-    auto i = 2;
+    // Modificateurs temporaires sur i et j
     int i_mod;
-    // Position dans la séquence et ajout temporaire
-    int j;
     int j_mod;
-    // Valeurs temporaires
+    // Valeurs temporaires pour calculer le maximum et la prochaine valeur de V[i][j], et l'étape retour
     float tmp;
     float v_i_j_value;
     float max_value;
     std::pair<int,int> max_coordinates;
     // epsilon
     const float epsilon = 1e-20;
-    // État actuel : On part toujours de M.
-    HMMState current_state;
 
-    // Initialisation des matrices sans valeur
+    // Initialisation des matrices sans valeur, sauf la première colonne qui vaut -inf
     for (auto line = 0; line < 3 * N_ + 1; line++) {
         V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
-        V[line][0] = 0;
+        V.back()[0] = -1 * std::numeric_limits<float>::infinity();
         B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
     }
-    // Première ligne à 0 + première ligne à -inf peut-être
+    // Première et seconde ligne à -inf
     for (auto column = 0; column < V.back().size(); column ++) {
-        V[0][column] = 0;
-        // L'état D0 n'existe pas. Faut-il le mettre à -inf ? C'est déjà à 0, on aura -inf avec les calculs sur T
-        // V[1][column] = -1 * std::numeric_limits<float>::infinity();
+        V[0][column] = -1 * std::numeric_limits<float>::infinity();
+        V[1][column] = -1 * std::numeric_limits<float>::infinity();
     }
-    V[0][0] = -1 * std::numeric_limits<float>::infinity();
-    std::vector<float> values;
-    while (i < 3 * N_) {
-        // Calcul du prochain état
-        if (i % 3 == 0) {
-            current_state = HMMState::M;
-        } else if (i % 3 == 1) {
-            current_state = HMMState::D;
-        } else if (i % 3 == 2) {
-            current_state = HMMState::I;
-        } else {
-            current_state = HMMState::None;
-        }
-        j = 0;
-        while (j < sequences_.back().size()) {
-            values.clear();
-            v_i_j_value = 0;
-            // Calcul du modificateur appliqué et de l'ajout supplémentaire
-            switch (current_state) {
-                case (HMMState::M): {
-                    i_mod = 1;
-                    j_mod = 1;
-                    if (e_M_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].has_value()) {
-                        v_i_j_value = logf(e_M_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].value() + epsilon);
-                    } else {
-                        v_i_j_value = logf(epsilon);
-                    }
-                    break;
-                }
-                case (HMMState::D): {
-                    i_mod = 2;
-                    j_mod = 0;
+    // Sauf V[0][0] = 0
+    V[0][0] = 0;
+    for(auto i = 2; i < 3 * N_ + 1; i++) {
+        for (auto j = 1; j < sequences_.back().size() + 1; j++) {
+            // Calcul du prochain état : en fonction de i % 3 : 0 -> M; 1 -> D; 2 -> I (else none pour la forme)
+            // Pour chaque état, calcul du modificateur d'index sur i et j ainsi que de la valeur v_i_j propre à chaque
+            // état. L'usage des modificateurs permet d'avoir une formule unique dans le calcul du max, car les valeurs
+            // à tester sont les mêmes à un facteur constant prêt dans les 3 cas.
+            if (i % 3 == 0) {
+                i_mod = 1;
+                j_mod = 1;
+                // Calcul de la "constante" en fonction de e_M
+                if (i < 3 * N_) {
+                    v_i_j_value = logf(e_M_[i / 3][alphabet[sequences_.back()[j]]].value() + epsilon);
+                } else {
                     v_i_j_value = 0;
-                    break;
                 }
-                case (HMMState::I): {
-                    i_mod = 0;
-                    j_mod = 1;
-                    if (e_I_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].has_value()) {
-                        v_i_j_value = logf(e_I_[i / 3 - i_mod][alphabet[sequences_.back()[j - j_mod]]].value() + epsilon);
-                    } else {
-                        v_i_j_value = logf(epsilon);
-                    }
-                    break;
-                }
-                // Pas de case None, impossible
-                case HMMState::None: {
-                    break;
-                }
+
+            } else if (i % 3 == 1) {
+                i_mod = 2;
+                j_mod = 0;
+                // Réinitialisation des compteurs
+                // La "constante" vaut 0, car c'est un état D
+                v_i_j_value = 0;
+
+            } else if (i % 3 == 2) {
+                i_mod = 0;
+                j_mod = 1;
+                // Calcul de la "constante" en fonction de e_I
+                v_i_j_value = logf(e_I_[i / 3][alphabet[sequences_.back()[j]]].value() + epsilon);
             }
-            // Réinitialisation des compteurs
-            max_value = 0;
-            max_coordinates = {0, 0};
             // Calculer les 3 valeurs si elles existent (check index)
+            // Réinitialisation de la recherche de max
+            max_value = -1 * std::numeric_limits<float>::infinity();
+            // Calcul du maximum des 3 valeurs recherchées, y ajouter la valeur propre à chaque état et sauvegarder
+            // dans V. On utilise tmp mod pour itérer sur les 3 valeurs
             for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
-                if (i - i_mod - tmp_mod >= 0 && j - j_mod >= 0) {
-                    tmp = max_value;
-                    max_value = logf(T_[i / 3][i - i_mod - tmp_mod / 3].value() + epsilon);
-                    if (max_value > tmp) {
-                        max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
-                    }
-                    v_i_j_value += max_value;
-                    if (V[i - i_mod - tmp_mod][j - j_mod].has_value()) {
-                        v_i_j_value += V[i - i_mod - tmp_mod][j - j_mod].value();
-                    }
+                // Calcul de V[][] + log(T[][])
+                tmp = V[i - i_mod - tmp_mod][j - j_mod].value() +
+                        logf(T_[(i - i_mod - tmp_mod) / 3][(3 * (2 - tmp_mod)) + (i % 3)].value());
+                // Comparaison avec le maximum actuel
+                if (tmp > max_value) {
+                    max_value = tmp;
+                    max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
                 }
-                values.push_back(v_i_j_value);
             }
-            // Prendre le maximum et le sommer à tmp
-            v_i_j_value += *std::max_element(values.begin(), values.end());
-            V[i][j] = v_i_j_value;
+            V[i][j] = v_i_j_value + max_value;
             // Étape retour
             B[i][j] = max_coordinates;
-            j++;
         }
-        // Update les states
-        i++;
     }
+    if (score) {
+        std::cout << std::setprecision(3) << std::fixed << V.back().back().value() << std::endl;
+        return;
+    }
+    // TODO : étape retour
+    // Debug : print V
     display_matrix(V);
+    //TODO : implement display for pair
+    /*
+    std::cout << std::endl;
+    display_matrix(B);
+     */
 }
 
 char HMM::find_alphabet_value_of(size_t index) {
@@ -533,56 +511,4 @@ std::size_t index_of_max(std::vector<std::optional<float>> & vector, int i_facto
         }
     }
     return max_index;
-}
-
-
-void HMM::viterbook() {
-    // Matrice de score
-    std::vector<std::vector<std::optional<float>>> V;
-    // Matrice retour
-    std::vector<std::vector<std::pair<int, int>>> B;
-
-
-    std::pair<int,int> max_coordinates;
-
-    // epsilon
-    const float epsilon = 1e-20;
-
-    // Initialisation des matrices sans valeur, sauf V[0][0] = 0
-    B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
-    for (auto line = 0; line < 3 * N_ + 1; line++) {
-        V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
-        B.emplace_back(sequences_.back().size() + 1, std::pair<int,int>());
-    }
-    V[0][0] = 0;
-    // Itération selon les lignes i
-    float tmp;
-    for (int i = 0; i < 3 * N_; i++) {
-        // Itération selon les colonnes j
-        for (int j = 0; j < sequences_.back().size() + 1; j++) {
-            // État m → V_M
-            tmp = 0;
-            if (i % 3 == 0) {
-                if (e_M_[i / 3][alphabet[sequences_.back()[j]]].has_value()) {
-                    V[i][j] = log(e_M_[i / 3][alphabet[sequences_.back()[j]]].has_value());
-                } else {
-                    tmp = 0;
-                }
-                //tmp += log(T_[] * exp(V[i / 3][j - 1].value()));
-            }
-            // État D → V_D
-            else if (i % 3 == 1) {
-
-            }
-            // État I → V_I
-            else {
-
-            }
-            for (int state = 0; state < 3; state++) {
-
-            }
-        }
-    }
-    // Compute final score V_M_L+1(n) (111)
-    display_matrix(V);
 }

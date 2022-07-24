@@ -33,10 +33,7 @@ public:
 
     void print_model() const;
 
-    void viterbi();
-
-    void viterbook();
-
+    void viterbi(bool score);
     void set_sequences(std::vector<std::vector<char>> sequences);
 
 private:
