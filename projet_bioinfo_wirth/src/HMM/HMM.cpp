@@ -429,6 +429,7 @@ void HMM::viterbi(bool score) {
                     v_i_j_value = logf(e_M_[i / 3][alphabet[sequences_.back()[j - 1]]].value() + epsilon);
                 } else {
                     v_i_j_value = 0;
+                    j_mod = 0;
                 }
 
             } else if (i % 3 == 1) /* État D */ {
