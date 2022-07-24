@@ -470,10 +470,12 @@ void HMM::viterbi(bool score) {
         std::cout << std::setprecision(3) << std::fixed << V.back().back().value() << std::endl;
         return;
     }
+#ifdef DEBUG
     // Debug : print V
     display_matrix(V);
     // Debug : print B
     display_matrix(B);
+#endif
 
     // Étape retour : construction des états et de la séquence alignée
     std::pair<int, int> current_cell = B.back().back();
