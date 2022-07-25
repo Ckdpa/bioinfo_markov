@@ -105,7 +105,7 @@ private:
      * Surcharge pour une matrice de paire d'enter
      * @param matrix
      */
-    [[ maybe_unused ]] static void display_matrix(std::vector<std::vector<std::pair<std::size_t, std::size_t>>> matrix);
+    [[ maybe_unused ]] static void display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix);
     // VARIABLES DE CLASSE
     // Liste de séquences
     std::vector<std::vector<char>> sequences_;

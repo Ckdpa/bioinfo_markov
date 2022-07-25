@@ -449,7 +449,7 @@ void HMM::viterbi(bool score) {
     // Matrice de score
     std::vector<std::vector<std::optional<float>>> V;
     // Matrice retour
-    std::vector<std::vector<std::pair<std::size_t, std::size_t>>> B;
+    std::vector<std::vector<std::pair<int, int>>> B;
 
     // Modificateurs temporaires sur i et j
     int i_mod;
@@ -458,7 +458,7 @@ void HMM::viterbi(bool score) {
     float tmp;
     float v_i_j_value;
     float max_value;
-    std::pair<std::size_t, std::size_t> max_coordinates;
+    std::pair<int, int> max_coordinates;
     // epsilon
     const float epsilon = 1e-20;
 
@@ -466,7 +466,7 @@ void HMM::viterbi(bool score) {
     for (auto line = 0; line < 3 * N_ + 1; line++) {
         V.emplace_back(sequences_.back().size() + 1, std::optional<float>());
         V.back()[0] = -1 * std::numeric_limits<float>::infinity();
-        B.emplace_back(sequences_.back().size() + 1, std::pair<std::size_t, std::size_t>());
+        B.emplace_back(sequences_.back().size() + 1, std::pair<int, int>(-1, -1));
     }
     // Première et seconde ligne à -inf
     for (std::size_t column = 0; column < V.back().size(); column ++) {
@@ -508,14 +508,14 @@ void HMM::viterbi(bool score) {
             // Calculer les 3 valeurs si elles existent (check index)
             // Réinitialisation de la recherche de max
             max_value = -1 * std::numeric_limits<float>::infinity();
-            max_coordinates = {};
+            max_coordinates = {i - i_mod - 2, j - j_mod};
             // Calcul du maximum des 3 valeurs recherchées. On utilise tmp mod pour itérer sur les 3 valeurs
             for (int tmp_mod = 0; tmp_mod < 3; tmp_mod++) {
                 // Calcul de V[][] + log(T[][])
                 tmp = V[i - i_mod - tmp_mod][j - j_mod].value() +
                         logf(T_[(i - i_mod - tmp_mod) / 3][(3 * (2 - tmp_mod)) + (i % 3)].value());
                 // Comparaison avec le maximum actuel
-                if (tmp > max_value) {
+                if (tmp >= max_value) {
                     max_value = tmp;
                     max_coordinates = {i - i_mod - tmp_mod, j - j_mod};
                 }
@@ -538,40 +538,32 @@ void HMM::viterbi(bool score) {
     display_matrix(B);
 #endif
     // Étape retour : construction des états et de la séquence alignée : on part de la case en bas à droite de V
-    std::pair<std::size_t, std::size_t> current_cell = B.back().back();
+    std::pair<int, int> current_cell = B.back().back();
     std::string sequence{};
     std::string states_sequence{};
-    // Tant que nous n'avons pas atteint un bord (vraisemblablement 0,0)
-    while (current_cell.first != 0 && current_cell.second != 0) {
+    // Tant que nous n'avons pas 0,0
+    while (current_cell != std::pair<int, int>(0, 0)) {
         // Calcul de l'état actuel : la ligne sur laquelle on se trouve % 3 (0=M, 1=D, 2=I)
         // On ajoute l'état actuel au début de la liste d'état (car on reconstruit à l'envers la liste d'états)
+        // On ajoute le caractère à la position contenue dans le 2è élément de la paire - 1 à la séquence d'acide aminés
         switch (static_cast<HMMState>(current_cell.first % 3)) {
             case HMMState::M:
                 states_sequence.insert(0, 1,'M');
+                sequence.insert(0, 1, sequences_.back()[current_cell.second - 1]);
                 break;
             case HMMState::D:
                 states_sequence.insert(0, 1,'D');
+                sequence.insert(0, 1, '-');
                 break;
             case HMMState::I:
                 states_sequence.insert(0, 1,'I');
+                sequence.insert(0, 1, sequences_.back()[current_cell.second - 1]);
                 break;
             case HMMState::None:
                 break;
         }
         // État suivant
         current_cell = B[current_cell.first][current_cell.second];
-    }
-    // Reconstruction de la liste d'acides aminés
-    auto sequence_index = 0;
-    // Pour chaque état
-    for (const char & state_count : states_sequence) {
-        // Si c'est un M ou I : ajouter la première lettre non déjà écrite
-        if (state_count == 'M' || state_count == 'I') {
-            sequence.push_back(sequences_.back()[sequence_index++]);
-        } else {
-            // Sinon, ajouter un '-' pour marquer la deletion
-            sequence.push_back('-');
-        }
     }
     // output : print les séquences
     std::cout << sequence << std::endl;
@@ -590,12 +582,12 @@ char HMM::find_alphabet_value_of(size_t index) {
 
 // Surcharge de display_matrix pour écrire la matrice de paire. Utilisée en débug pour écrire B la matrice retour de
 // HMM-align
-void HMM::display_matrix(std::vector<std::vector<std::pair<std::size_t, std::size_t>>> matrix) {
+void HMM::display_matrix(std::vector<std::vector<std::pair<int, int>>> matrix) {
     for (auto & line : matrix) {
         for (std::size_t j = 0; j < line.size(); j++) {
-                std::cout << "[" << line[j].first << " " << line[j].second << ']';
+                std::cout << line[j].first << "," << line[j].second;
             if (j != line.size() - 1) {
-                std::cout << ',';
+                std::cout << ' ';
             } else {
                 std::cout << std::endl;
             }
