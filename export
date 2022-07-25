@@ -1,0 +1,2 @@
+cd ..
+tar -cvjSf projet_bioinfo_wirth.tar.bz2 projet_bioinfo_wirth/src projet_bioinfo_wirth/AUTHORS projet_bioinfo_wirth/README projet_bioinfo_wirth/CMakeLists.txt
