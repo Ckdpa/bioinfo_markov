@@ -1,130 +1,131 @@
 rm tmp.txt
 touch tmp
-./HMM-align --score data/easy1_0.3.model data/easy1_seq1.fasta >> tmp
-./HMM-align data/easy1_0.3.model data/easy1_seq1.fasta >> tmp
-./HMM-align --score data/easy1_0.3.model data/easy1_seq2.fasta >> tmp
-./HMM-align data/easy1_0.3.model data/easy1_seq2.fasta >> tmp
-./HMM-align --score data/easy1_0.3.model data/easy1_seq3.fasta >> tmp
-./HMM-align data/easy1_0.3.model data/easy1_seq3.fasta >> tmp
-./HMM-align --score data/easy1_0.5.model data/easy1_seq1.fasta >> tmp
-./HMM-align data/easy1_0.5.model data/easy1_seq1.fasta >> tmp
-./HMM-align --score data/easy1_0.5.model data/easy1_seq2.fasta >> tmp
-./HMM-align data/easy1_0.5.model data/easy1_seq2.fasta >> tmp
-./HMM-align --score data/easy1_0.5.model data/easy1_seq3.fasta >> tmp
-./HMM-align data/easy1_0.5.model data/easy1_seq3.fasta >> tmp
-./HMM-align --score data/easy1_0.7.model data/easy1_seq1.fasta >> tmp
-./HMM-align data/easy1_0.7.model data/easy1_seq1.fasta >> tmp
-./HMM-align --score data/easy1_0.7.model data/easy1_seq2.fasta >> tmp
-./HMM-align data/easy1_0.7.model data/easy1_seq2.fasta >> tmp
-./HMM-align --score data/easy1_0.7.model data/easy1_seq3.fasta >> tmp
-./HMM-align data/easy1_0.7.model data/easy1_seq3.fasta >> tmp
-./HMM-align --score data/PF00018_full_0.3.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_full_0.3.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_full_0.3.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_full_0.3.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_full_0.3.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_full_0.3.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00018_full_0.5.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_full_0.5.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_full_0.5.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_full_0.5.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_full_0.5.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_full_0.5.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00018_full_0.7.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_full_0.7.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_full_0.7.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_full_0.7.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_full_0.7.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_full_0.7.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.3.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_seed_0.3.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.3.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_seed_0.3.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.3.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_seed_0.3.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.5.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_seed_0.5.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.5.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_seed_0.5.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.5.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_seed_0.5.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.7.model data/PF00018_seq1.txt >> tmp
-./HMM-align data/PF00018_seed_0.7.model data/PF00018_seq1.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.7.model data/PF00018_seq2.txt >> tmp
-./HMM-align data/PF00018_seed_0.7.model data/PF00018_seq2.txt >> tmp
-./HMM-align --score data/PF00018_seed_0.7.model data/PF00018_seq3.txt >> tmp
-./HMM-align data/PF00018_seed_0.7.model data/PF00018_seq3.txt >> tmp
-./HMM-align --score data/PF00595_full_0.3.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_full_0.3.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_full_0.3.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_full_0.3.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_full_0.3.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_full_0.3.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF00595_full_0.5.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_full_0.5.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_full_0.5.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_full_0.5.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_full_0.5.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_full_0.5.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF00595_full_0.7.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_full_0.7.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_full_0.7.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_full_0.7.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_full_0.7.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_full_0.7.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.3.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_seed_0.3.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.3.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_seed_0.3.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.3.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_seed_0.3.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.5.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_seed_0.5.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.5.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_seed_0.5.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.5.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_seed_0.5.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.7.model data/PF00595_seq1.txt >> tmp
-./HMM-align data/PF00595_seed_0.7.model data/PF00595_seq1.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.7.model data/PF00595_seq2.txt >> tmp
-./HMM-align data/PF00595_seed_0.7.model data/PF00595_seq2.txt >> tmp
-./HMM-align --score data/PF00595_seed_0.7.model data/PF00595_seq3.txt >> tmp
-./HMM-align data/PF00595_seed_0.7.model data/PF00595_seq3.txt >> tmp
-./HMM-align --score data/PF02171_full_0.3.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_full_0.3.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.3.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_full_0.3.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.3.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_full_0.3.model data/PF02171_seq3.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.5.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_full_0.5.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.5.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_full_0.5.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.5.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_full_0.5.model data/PF02171_seq3.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.7.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_full_0.7.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.7.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_full_0.7.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_full_0.7.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_full_0.7.model data/PF02171_seq3.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.3.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_seed_0.3.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.3.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_seed_0.3.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.3.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_seed_0.3.model data/PF02171_seq3.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.5.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_seed_0.5.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.5.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_seed_0.5.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.5.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_seed_0.5.model data/PF02171_seq3.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.7.model data/PF02171_seq1.fasta >> tmp
-./HMM-align data/PF02171_seed_0.7.model data/PF02171_seq1.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.7.model data/PF02171_seq2.fasta >> tmp
-./HMM-align data/PF02171_seed_0.7.model data/PF02171_seq2.fasta >> tmp
-./HMM-align --score data/PF02171_seed_0.7.model data/PF02171_seq3.fasta >> tmp
-./HMM-align data/PF02171_seed_0.7.model data/PF02171_seq3.fasta >> tmp
-mv tmp tmp.txt
-diff tmp.txt hmm-align-check
+./HMM-align --score given_files/easy1_0.3.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align given_files/easy1_0.3.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align --score given_files/easy1_0.3.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align given_files/easy1_0.3.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align --score given_files/easy1_0.3.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align given_files/easy1_0.3.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align --score given_files/easy1_0.5.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align given_files/easy1_0.5.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align --score given_files/easy1_0.5.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align given_files/easy1_0.5.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align --score given_files/easy1_0.5.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align given_files/easy1_0.5.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align --score given_files/easy1_0.7.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align given_files/easy1_0.7.model given_files/easy1_seq1.fasta >> tmp
+./HMM-align --score given_files/easy1_0.7.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align given_files/easy1_0.7.model given_files/easy1_seq2.fasta >> tmp
+./HMM-align --score given_files/easy1_0.7.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align given_files/easy1_0.7.model given_files/easy1_seq3.fasta >> tmp
+./HMM-align --score given_files/PF00018_full_0.3.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_full_0.3.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.3.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_full_0.3.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.3.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_full_0.3.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.5.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_full_0.5.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.5.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_full_0.5.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.5.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_full_0.5.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.7.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_full_0.7.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.7.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_full_0.7.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_full_0.7.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_full_0.7.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.3.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.3.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.3.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.3.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.3.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.3.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.5.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.5.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.5.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.5.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.5.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.5.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.7.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.7.model given_files/PF00018_seq1.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.7.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.7.model given_files/PF00018_seq2.txt >> tmp
+./HMM-align --score given_files/PF00018_seed_0.7.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align given_files/PF00018_seed_0.7.model given_files/PF00018_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.3.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_full_0.3.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.3.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_full_0.3.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.3.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_full_0.3.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.5.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_full_0.5.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.5.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_full_0.5.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.5.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_full_0.5.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.7.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_full_0.7.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.7.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_full_0.7.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_full_0.7.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_full_0.7.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.3.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.3.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.3.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.3.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.3.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.3.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.5.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.5.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.5.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.5.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.5.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.5.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.7.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.7.model given_files/PF00595_seq1.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.7.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.7.model given_files/PF00595_seq2.txt >> tmp
+./HMM-align --score given_files/PF00595_seed_0.7.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align given_files/PF00595_seed_0.7.model given_files/PF00595_seq3.txt >> tmp
+./HMM-align --score given_files/PF02171_full_0.3.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.3.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.3.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.3.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.3.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.3.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.5.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.5.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.5.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.5.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.5.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.5.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.7.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.7.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.7.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.7.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_full_0.7.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_full_0.7.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.3.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.3.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.3.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.3.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.3.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.3.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.5.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.5.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.5.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.5.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.5.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.5.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.7.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.7.model given_files/PF02171_seq1.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.7.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.7.model given_files/PF02171_seq2.fasta >> tmp
+./HMM-align --score given_files/PF02171_seed_0.7.model given_files/PF02171_seq3.fasta >> tmp
+./HMM-align given_files/PF02171_seed_0.7.model given_files/PF02171_seq3.fasta >> tmp
+mv tmp
+diff tmp hmm-align-check
+rm tmp
